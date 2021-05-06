@@ -8,7 +8,7 @@ from numpy import save
 from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
 import numpy as np
-from keras import layers, models, optimizers
+from keras import layers,models, optimizers
 from keras.layers import Input,Dense,BatchNormalization,Flatten,Dropout,GlobalAveragePooling2D
 from keras.models import Model, load_model
 from keras.utils import layer_utils
@@ -30,7 +30,7 @@ import tensorflow as tf
 
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Cat and Dog image classification using Keras')
-    parser.add_argument('-epochs',  metavar='num_epochs', type=int, default = 5, help = "Number of training epochs")
+    parser.add_argument('-epochs',  metavar='num_epochs', type=int, default = 1, help = "Number of training epochs")
     parser.add_argument('--batch_size',  metavar='batch_size', type=int, default = 16, help = "Batch Size")
     parser.add_argument('-f')
     return parser.parse_args()
@@ -124,7 +124,13 @@ def main():
             with h5py.File('checkpoint_file.hdf5', "a") as file:
                 file['epochs']=i
 
-    model.save('model.h5')
+    # model.save('model.h5')
+    model_json = model.to_json()
+    with open("model.json", "w") as json_file:
+        json_file.write(model_json)
+    # serialize weights to HDF5
+    model.save_weights("model.h5")
+    print("Saved model to disk")
     return 0
     
 if __name__ == '__main__':
