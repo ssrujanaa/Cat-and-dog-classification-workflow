@@ -7,9 +7,9 @@ from os import listdir
 from numpy import asarray
 from numpy import save
 from keras.preprocessing.image import load_img
-from keras.preprocessing.image import img_to_array
+from keras.preprocessing.image import ImageDataGenerator,img_to_array
 import numpy as np
-from keras import layers
+from keras import layers, models, optimizers
 from keras.layers import Input,Dense,BatchNormalization,Flatten,Dropout,GlobalAveragePooling2D
 from keras.models import Model, load_model
 from keras.utils import layer_utils
@@ -51,7 +51,7 @@ def hpo_monitor(study, trial):
     joblib.dump(study,"hpo_checkpoint.pkl")
        
 #get training, testing and validation data from the saved pickle files.
-def get_data(train_data,val_data):
+def get_data(train_data):
     train_photos, train_labels = list(), list()
     tp = list()
     for file in train_data:
@@ -65,21 +65,7 @@ def get_data(train_data,val_data):
         train_labels.append(output)
     train_photos = asarray(train_photos)
     train_labels = asarray(train_labels)
-
-    val_photos, val_labels = list(), list()
-    for file in val_data:
-        if 'Cat' in file:
-            output = 1.0
-        else:
-            output = 0.0
-        photo = load_img(file)
-        photo = img_to_array(photo)
-        val_photos.append(photo)
-        val_labels.append(output)
-    val_photos = asarray(val_photos)
-    val_labels = asarray(val_labels)
-    
-    return train_photos,train_labels,val_photos,val_labels
+    return train_photos, train_labels
 
 def objective(trial):
     aug_cat = glob('aug_Cat*.jpg')
@@ -87,24 +73,26 @@ def objective(trial):
     train_data = aug_cat + aug_dog
     val_data = glob('resized_*.jpg')
    
-    train_photos,train_labels,val_photos,val_labels = get_data(train_data, val_data)
-    nb_classes = 2
-    epochs=1
-    batch_size =5
-    optimizer_options = ["RMSprop", "Adam", "SGD"]
+    train_photos,train_labels = get_data(train_data)
+    val_photos, val_labels = get_data(val_data)
+                                                 
+    conv_base = VGG16(weights='imagenet',
+                    include_top=False,
+                    input_shape=(200, 200, 3))
 
-    vgg16_model = VGG16(weights = 'imagenet', include_top = False)
-    x = vgg16_model.output
-    x = GlobalAveragePooling2D()(x)
-    x = Dense(1024, activation=trial.suggest_categorical('activation', ['relu', 'linear']))(x)
-    predictions = Dense(nb_classes, activation = 'softmax')(x)
-    model = Model(input = vgg16_model.input, output = predictions)
-    for layer in vgg16_model.layers:
-        layer.trainable = False
+    model = models.Sequential()
+    model.add(conv_base)
+    model.add(layers.Flatten())
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(256, activation=trial.suggest_categorical('activation', ['relu', 'linear'])))
+    model.add(layers.Dense(1, activation='sigmoid'))
 
-    model.compile(optimizer = trial.suggest_categorical("optimizer", ["rmsprop", "Adam", "SGD"]),loss = 'sparse_categorical_crossentropy', metrics = ['accuracy'])
-    
-    model.fit(x=train_photos, y=train_labels, batch_size=2 , epochs=epochs, validation_data=(val_photos,val_labels))
+    conv_base.trainable = False
+
+    model.compile(loss='binary_crossentropy',
+                optimizer=optimizers.RMSprop(lr=2e-5),
+                metrics=['acc'])  
+    model.fit(x=train_photos, y=train_labels,validation_data=(val_photos, val_labels),batch_size=32, epochs = 3) 
     return 0
 
 

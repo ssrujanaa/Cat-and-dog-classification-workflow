@@ -4,6 +4,9 @@
 from Pegasus.api import *
 import os
 from sklearn.model_selection import train_test_split
+import argparse
+import sys
+
 
 def create_data_split(input_images):
     cat = []
@@ -36,7 +39,7 @@ def create_data_split(input_images):
         
     return train_data, test_data, validation_data
 
-def parallelize_jobs(WORKERS, job, data, job_type):
+def parallelize_jobs(WORKERS,job, data, job_type):
     job_list = []
     for i in range(WORKERS):
         job_list.append(Job(job))
@@ -46,7 +49,7 @@ def parallelize_jobs(WORKERS, job, data, job_type):
         job_list[curr].add_inputs(data[i])
         if job_type == 'Augment':
             output_files = ["aug_{}_{}".format(os.path.splitext(str(data[i]).split('_')[1])[0], str(k) + '.jpg') for k 
-                            in range(3)]
+                            in range(2)]
             for f in output_files:
                 job_list[curr].add_outputs(File(f))
         

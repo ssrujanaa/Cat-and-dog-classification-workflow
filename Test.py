@@ -5,35 +5,22 @@
 import pickle
 import signal
 from os import listdir
-from numpy import asarray
-from numpy import save
-from keras.preprocessing.image import load_img
-from keras.preprocessing.image import img_to_array
+from numpy import asarray,save
+from keras.preprocessing.image import load_img,img_to_array
+from keras.models import model_from_json
 import numpy as np
-from keras import layers
-from keras.layers import Input,Dense,BatchNormalization,Flatten,Dropout,GlobalAveragePooling2D
-from keras.models import Model, load_model
-from keras.utils import layer_utils
-from keras.optimizers import Adam
-from keras.callbacks import ModelCheckpoint
-from keras.callbacks import CSVLogger
-import keras.backend as K
-import traceback
-from keras.applications.vgg16 import VGG16
-from keras.models import Model,load_model
 import pandas as pd
 import h5py
 import sys
 import joblib
 import argparse
-import keras
-import tensorflow as tf
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
+from glob import glob
 
 def get_test_data(input_files):
     test_photos, test_labels = list(), list()
@@ -50,17 +37,24 @@ def get_test_data(input_files):
     test_labels = asarray(test_labels)
     return test_photos,test_labels
 
-input_files = glob('resized_*.jpg')
-model = load_model('model.h5')
-test_photos, test_labels = get_test_data(input_files)
+with open('testing.pkl', 'rb') as f:
+    test_data = pickle.load(f)
+    
+json_file = open('model.json', 'r')
+loaded_model_json = json_file.read()
+json_file.close()
+loaded_model = model_from_json(loaded_model_json)
 
-# predict probabilities for test set
-yhat_probs = model.predict(test_photos, verbose=0)
-# predict crisp classes for test set
-yhat_classes = yhat_probs.argmax(axis=-1)
-# reduce to 1d array
-yhat_probs = yhat_probs[:][0]
-yhat_classes = yhat_classes[:]
+# load weights into new model
+loaded_model.load_weights("model.h5")
+print("Loaded model from disk")
+
+test_photos, test_labels = get_test_data(test_data)
+    
+loaded_model.compile(loss='binary_crossentropy',optimizer=optimizers.RMSprop(lr=2e-5),metrics=['acc'])
+
+y_pred = loaded_model.predict(test_photos)
+yhat_classes = (y_pred > 0.5)
 
 accuracy = accuracy_score(test_labels, yhat_classes)
 print('Accuracy: %f' % accuracy)

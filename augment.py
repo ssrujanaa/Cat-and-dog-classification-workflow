@@ -33,7 +33,7 @@ def augment():
                                   save_to_dir = os.getcwd(),  
                                   save_prefix ='aug_' + os.path.splitext(image.split('_')[1])[0] , save_format ='jpg'): 
             i += 1
-            if i > 2: 
+            if i > 1: 
                 break
     for image in dog_images:
             num = 0.0
@@ -46,34 +46,40 @@ def augment():
                                       save_to_dir = os.getcwd(),  
                                       save_prefix= 'aug_' + os.path.splitext(image.split('_')[1])[0] , save_format ='jpg'): 
                 i += 1
-                if i > 2: 
+                if i > 1: 
                     break
     return cat_images, dog_images,q
 
 def rename_augmented_files():
-    cat_images, dog_images,q = augment()
-    aug_cat = glob('aug_Cat*.jpg')
-    aug_dog = glob('aug_Dog*.jpg')
-    aug_images = aug_cat + aug_dog
-    aug_cat.sort()
-    for n in range(len(cat_images)):
-        k = 0
-        for m in range(len(aug_cat)):
-            if os.path.splitext(cat_images[n].split('_')[1])[0]  in aug_cat[m]:
-                photo = load_img(aug_cat[m])
-                photo.save('aug_'+ os.path.splitext(cat_images[n].split('_')[1])[0] + '_' + str(k) +'.jpg', 'JPEG', quality=90)
-                q.append('aug_'+ os.path.splitext(cat_images[n].split('_')[1])[0] + '_' +str(k) +'.jpg')
-                k+=1
+    try:
+        cat_images, dog_images,q = augment()
+        aug_cat = glob('aug_Cat*.jpg')
+        aug_dog = glob('aug_Dog*.jpg')
+        aug_images = aug_cat + aug_dog
+        aug_cat.sort()
+        for n in range(len(cat_images)):
+            k = 0
+            for m in range(len(aug_cat)):
+                if os.path.splitext(cat_images[n].split('_')[1])[0]  in aug_cat[m]:
+                    photo = load_img(aug_cat[m])
+                    photo.save('aug_'+ os.path.splitext(cat_images[n].split('_')[1])[0] + '_' + str(k) +'.jpg', 
+                               'JPEG', quality=90)
+                    q.append('aug_'+ os.path.splitext(cat_images[n].split('_')[1])[0] + '_' +str(k) +'.jpg')
+                    k+=1
 
-    aug_dog.sort()
-    for n in range(len(dog_images)):
-        k = 0
-        for m in range(len(aug_dog)):
-            if os.path.splitext(dog_images[n].split('_')[1])[0]  in aug_dog[m]:
-                photo = load_img(aug_dog[m])
-                photo.save('aug_'+ os.path.splitext(dog_images[n].split('_')[1])[0] + '_' + str(k) + '.jpg', 'JPEG', quality=90)
-                q.append('aug_'+ os.path.splitext(dog_images[n].split('_')[1])[0] + '_' + str(k) +'.jpg')
-                k+=1 
+        aug_dog.sort()
+        for n in range(len(dog_images)):
+            k = 0
+            for m in range(len(aug_dog)):
+                if os.path.splitext(dog_images[n].split('_')[1])[0]  in aug_dog[m]:
+                    photo = load_img(aug_dog[m])
+                    photo.save('aug_'+ os.path.splitext(dog_images[n].split('_')[1])[0] + '_' + str(k) + '.jpg',
+                               'JPEG', quality=90)
+                    q.append('aug_'+ os.path.splitext(dog_images[n].split('_')[1])[0] + '_' + str(k) +'.jpg')
+                    k+=1 
+    except FileNotFoundError:
+        print("FileNotFound")
+        
 def main():
     rename_augmented_files()
     return 0
