@@ -37,8 +37,7 @@ def get_test_data(input_files):
     test_labels = asarray(test_labels)
     return test_photos,test_labels
 
-with open('testing.pkl', 'rb') as f:
-    test_data = pickle.load(f)
+test_data = glob('*.jpg')
     
 json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
