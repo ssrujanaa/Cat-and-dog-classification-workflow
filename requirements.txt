@@ -1,0 +1,14 @@
+--upgrade pip
+keras==2.1.5
+tensorflow==1.13.1
+numpy
+pandas
+sklearn
+optuna
+scikit-image
+optkeras
+h5py==2.10.0
+ 
+
+ 
+
