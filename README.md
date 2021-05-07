@@ -13,3 +13,5 @@ This is a workflow to classify whether images contain either a dog or a cat usin
 
 # Pegasus Workflow to Classify Cats and Dogs
 Detailed walk through steps of training a VGG16 architecture.
+
+![](img/DogVsCat.png)
