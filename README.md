@@ -9,3 +9,7 @@ This is a workflow to classify whether images contain either a dog or a cat usin
     - This is required to install all needed dependencies.
 3. run notebook of your choice.
 4. The workflow is in the `.ipynb` file called `workflow.ipynb`.
+
+
+# Pegasus Workflow to Classify Cats and Dogs
+Detailed walk through steps of training a VGG16 architecture.
