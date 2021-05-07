@@ -5,20 +5,17 @@ import signal
 from os import listdir
 from numpy import asarray
 from numpy import save
-from keras.preprocessing.image import load_img
-from keras.preprocessing.image import img_to_array
+from keras.preprocessing.image import load_img,img_to_array
 import numpy as np
 from keras import layers,models, optimizers
-from keras.layers import Input,Dense,BatchNormalization,Flatten,Dropout,GlobalAveragePooling2D
+from keras.layers import Dense,Flatten,Dropout
 from keras.models import Model, load_model
 from keras.utils import layer_utils
-from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import CSVLogger
 import keras.backend as K
 import traceback
 from keras.applications.vgg16 import VGG16
-from keras.models import Model,load_model
 import pandas as pd
 import h5py
 import sys
@@ -38,7 +35,6 @@ def parse_args(args):
 #get training, testing and validation data from the saved pickle files.
 def get_data(train_data):
     train_photos, train_labels = list(), list()
-    tp = list()
     for file in train_data:
         if 'Cat' in file:
             output = 1.0

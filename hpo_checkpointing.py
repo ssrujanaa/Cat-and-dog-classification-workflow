@@ -2,27 +2,19 @@
 # coding: utf-8
 import sys
 import shutil
-import pickle
-from os import listdir
 from numpy import asarray
-from numpy import save
-from keras.preprocessing.image import load_img
-from keras.preprocessing.image import ImageDataGenerator,img_to_array
+from keras.preprocessing.image import load_img,img_to_array
 import numpy as np
 from keras import layers, models, optimizers
-from keras.layers import Input,Dense,BatchNormalization,Flatten,Dropout,GlobalAveragePooling2D
+from keras.layers import Dense,Flatten,Dropout
 from keras.models import Model, load_model
 from keras.utils import layer_utils
-from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
-from keras.callbacks import EarlyStopping
 import keras.backend as K
 from keras.applications.vgg16 import VGG16
-from keras.models import Model,load_model
 from optkeras.optkeras import OptKeras
 import optkeras
 import pickle
-from keras.optimizers import RMSprop
 import optuna
 import os
 import tensorflow as tf
@@ -31,15 +23,11 @@ import argparse
 import joblib
 import pandas as pd
 from glob import glob
-optkeras.optkeras.get_trial_default = lambda: optuna.trial.FrozenTrial(
-        None, None, None, None, None, None, None, None, None, None, None)
-
-
 import keras
 import tensorflow as tf
 from tensorflow.python.client import device_lib
-print(device_lib.list_local_devices())
-
+optkeras.optkeras.get_trial_default = lambda: optuna.trial.FrozenTrial(
+        None, None, None, None, None, None, None, None, None, None, None)
 config = tf.ConfigProto( device_count = {'GPU': 1 , 'CPU': 56} ) 
 sess = tf.Session(config=config) 
 keras.backend.set_session(sess)
@@ -53,7 +41,6 @@ def hpo_monitor(study, trial):
 #get training, testing and validation data from the saved pickle files.
 def get_data(train_data):
     train_photos, train_labels = list(), list()
-    tp = list()
     for file in train_data:
         if 'Cat' in file:
             output = 1.0
@@ -84,7 +71,7 @@ def objective(trial):
     model.add(conv_base)
     model.add(layers.Flatten())
     model.add(layers.Dropout(0.5))
-    model.add(layers.Dense(256, activation=trial.suggest_categorical('activation', ['relu', 'linear'])))
+    model.add(layers.Dense(256, activation=trial.suggest_categorical('activation', ['relu', 'linear']))) #using optuna to choose the best activation function. 
     model.add(layers.Dense(1, activation='sigmoid'))
 
     conv_base.trainable = False
@@ -114,8 +101,8 @@ def main():
         study_name = "CatsAndDogs" + '_Simple'
         ok = OptKeras(study_name=study_name,monitor='val_acc',direction='maximize')
         ok.optimize(objective, n_trials=N_TRIALS, timeout=600, callbacks=[hpo_monitor])
-    output_file = 'hpo_results.pkl'
-    shutil.copyfile(hpo_checkpoint_file, output_file)
+    output_file = 'hpo_results.pkl' #the best performing activation function is saved in this pickle file.
+    shutil.copyfile(hpo_checkpoint_file, output_file) 
     
     return 0
         

@@ -2,22 +2,19 @@
 # coding: utf-8
 import sys
 import shutil
-import pickle
-from os import listdir
-from numpy import asarray,save
-from keras.preprocessing.image import load_img
-from keras.preprocessing.image import ImageDataGenerator,img_to_array
+from numpy import asarray
+from keras.preprocessing.image import load_img,img_to_array
 import numpy as np
 from keras import layers, models, optimizers
-from keras.layers import Input,Dense,BatchNormalization,Flatten,Dropout,GlobalAveragePooling2D
+from keras.layers import Dense,Flatten,Dropout
 from keras.models import Model, load_model
 from keras.utils import layer_utils
-from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 import keras.backend as K
 from keras.applications.vgg16 import VGG16
 from optkeras.optkeras import OptKeras
 import optkeras
+import pickle
 import optuna
 import os
 import tensorflow as tf
@@ -26,14 +23,11 @@ import argparse
 import joblib
 import pandas as pd
 from glob import glob
-optkeras.optkeras.get_trial_default = lambda: optuna.trial.FrozenTrial(
-        None, None, None, None, None, None, None, None, None, None, None)
-
-
 import keras
 import tensorflow as tf
 from tensorflow.python.client import device_lib
-print(device_lib.list_local_devices())
+optkeras.optkeras.get_trial_default = lambda: optuna.trial.FrozenTrial(
+        None, None, None, None, None, None, None, None, None, None, None)
 
 config = tf.ConfigProto( device_count = {'GPU': 1 , 'CPU': 56} ) 
 sess = tf.Session(config=config) 
@@ -48,7 +42,6 @@ def hpo_monitor(study, trial):
 #get training, testing and validation data from the saved pickle files.
 def get_data(train_data):
     train_photos, train_labels = list(), list()
-    tp = list()
     for file in train_data:
         if 'Cat' in file:
             output = 1.0

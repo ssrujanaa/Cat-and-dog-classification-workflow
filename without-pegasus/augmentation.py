@@ -30,25 +30,26 @@ def augment():
         img = load_img(image)  
         x = img_to_array(img) 
         x = x.reshape((1, ) + x.shape) 
+        # Generating and saving 2 augmented samples 
         i = 0
         for batch in datagen.flow(x, batch_size = 1,
-                                  save_to_dir = 'augment/',  
+                                  save_to_dir = os.getcwd(),  
                                   save_prefix ='aug_' + os.path.splitext(image.split('_')[1])[0] , save_format ='jpg'): 
             i += 1
-            if i > 1: 
+            if i > 1: #change this value '1' to any desirable number to increase the number of training samples produced. 
                 break
+
     for image in dog_images:
-            num = 0.0
             img = load_img(image)  
             x = img_to_array(img) 
             x = x.reshape((1, ) + x.shape)  
-            # Generating and saving 5 augmented samples  
+            # Generating and saving 2 augmented samples  
             i = 0
             for batch in datagen.flow(x, batch_size = 1,
-                                      save_to_dir = 'augment/',  
+                                      save_to_dir = os.getcwd(),  
                                       save_prefix= 'aug_' + os.path.splitext(image.split('_')[1])[0] , save_format ='jpg'): 
                 i += 1
-                if i > 1: 
+                if i > 1: #change this value '1' to any desirable number to increase the number of training samples produced. 
                     break
     return cat_images, dog_images,q
 

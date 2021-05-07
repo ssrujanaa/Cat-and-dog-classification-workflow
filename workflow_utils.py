@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 import argparse
 import sys
 
-
+#data split in the ratio of 70 : 10 : 20 == train : val : test respectively. 
 def create_data_split(input_images):
     cat = []
     dog = []
@@ -36,9 +36,9 @@ def create_data_split(input_images):
     validation_data = []
     for f in val_data:
         validation_data.append(File(f))
-        
     return train_data, test_data, validation_data
 
+#make jobs run in parallel by specifying the number of workers in the script. 
 def parallelize_jobs(WORKERS,job, data, job_type):
     job_list = []
     for i in range(WORKERS):

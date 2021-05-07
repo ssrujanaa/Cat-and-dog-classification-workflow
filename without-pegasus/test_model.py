@@ -11,7 +11,6 @@ from keras.models import Model, load_model, model_from_json
 from keras import layers,models, optimizers
 from keras.preprocessing.image import load_img,img_to_array
 import numpy as np
-import pandas as pd
 import h5py
 import sys
 import joblib

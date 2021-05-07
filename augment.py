@@ -24,39 +24,39 @@ def augment():
                 brightness_range = (0.5, 1.5)) 
 
     for image in cat_images:
-        num = 1.0
         img = load_img(image)  
         x = img_to_array(img) 
         x = x.reshape((1, ) + x.shape) 
+         # Generating and saving 2 augmented samples 
         i = 0
         for batch in datagen.flow(x, batch_size = 1,
                                   save_to_dir = os.getcwd(),  
                                   save_prefix ='aug_' + os.path.splitext(image.split('_')[1])[0] , save_format ='jpg'): 
             i += 1
-            if i > 1: 
+            if i > 1: #change this value '1' to any desirable number to increase the number of training samples produced. 
                 break
+
     for image in dog_images:
-            num = 0.0
             img = load_img(image)  
             x = img_to_array(img) 
             x = x.reshape((1, ) + x.shape)  
-            # Generating and saving 5 augmented samples  
+            # Generating and saving 2 augmented samples  
             i = 0
             for batch in datagen.flow(x, batch_size = 1,
                                       save_to_dir = os.getcwd(),  
                                       save_prefix= 'aug_' + os.path.splitext(image.split('_')[1])[0] , save_format ='jpg'): 
                 i += 1
-                if i > 1: 
+                if i > 1: #change this value '1' to any desirable number to increase the number of training samples produced. 
                     break
-    return cat_images, dog_images,q
+    return cat_images, dog_images, q
 
 def rename_augmented_files():
     try:
         cat_images, dog_images,q = augment()
         aug_cat = glob('aug_Cat*.jpg')
         aug_dog = glob('aug_Dog*.jpg')
-        aug_images = aug_cat + aug_dog
         aug_cat.sort()
+
         for n in range(len(cat_images)):
             k = 0
             for m in range(len(aug_cat)):
@@ -66,8 +66,8 @@ def rename_augmented_files():
                                'JPEG', quality=90)
                     q.append('aug_'+ os.path.splitext(cat_images[n].split('_')[1])[0] + '_' +str(k) +'.jpg')
                     k+=1
-
         aug_dog.sort()
+
         for n in range(len(dog_images)):
             k = 0
             for m in range(len(aug_dog)):
@@ -77,6 +77,7 @@ def rename_augmented_files():
                                'JPEG', quality=90)
                     q.append('aug_'+ os.path.splitext(dog_images[n].split('_')[1])[0] + '_' + str(k) +'.jpg')
                     k+=1 
+
     except FileNotFoundError:
         print("FileNotFound")
         

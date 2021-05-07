@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from glob import glob
 import pickle
 
+#data split in the ratio of 70 : 10 : 20 == train : val : test respectively. 
 def split_data():
     input_images = glob('Resized/resized_*.jpg')
     cat = []
@@ -25,6 +26,7 @@ def split_data():
     val_data = val_cat + val_dog
     return training_data, testing_data,val_data
 
+#The split data is saved into respective pickle files. 
 def main():
     training_data, testing_data,val_data = split_data()
     with open('training.pkl', 'wb') as f:
