@@ -7,7 +7,7 @@ This is a workflow to classify whether images contain either a dog or a cat usin
 1. `git clone` https://github.com/ssrujanaa/Cat-and-dog-classification-workflow.git.
 2. `pip3 install requirements.txt`
     - This is required to install all needed dependencies.
-3. run notebook of your choice.
+3. run notebook in the IDE of your choice.
 4. The workflow is in the `.ipynb` file called `workflow.ipynb`.
 
 
