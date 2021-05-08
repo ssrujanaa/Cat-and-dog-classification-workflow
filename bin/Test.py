@@ -14,6 +14,7 @@ import h5py
 import sys
 import joblib
 import argparse
+from keras import layers, models, optimizers
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
@@ -37,7 +38,7 @@ def get_test_data(input_files):
     test_labels = asarray(test_labels)
     return test_photos,test_labels
 
-test_data = glob('*.jpg')
+test_data = glob('resized_*.jpg')
     
 json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
